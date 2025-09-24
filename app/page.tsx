@@ -44,6 +44,30 @@ export default function Home() {
   }, [ads, selectedCountry, selectedBrand, searchTerm])
 
   const fetchAds = async () => {
+    const fetchAds = async () => {
+  if (!supabase) {
+    console.warn('Supabase client not available')
+    setLoading(false)
+    return
+  }
+  
+  try {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('meta_ads')
+      .select('*')
+      .order('imported_at', { ascending: false })
+      .limit(100)
+
+    if (error) throw error
+    
+    setAds(data || [])
+  } catch (error) {
+    console.error('Error fetching ads:', error)
+  } finally {
+    setLoading(false)
+  }
+}
     try {
       setLoading(true)
       const { data, error } = await supabase
