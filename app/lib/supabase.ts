@@ -1,13 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Only create client if we have the required variables
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null
 
 // Types for our database
 export interface Ad {
@@ -35,6 +34,11 @@ export const fetchAds = async (filters?: {
   limit?: number
   offset?: number
 }) => {
+  if (!supabase) {
+    console.warn('Supabase client not initialized')
+    return []
+  }
+
   let query = supabase
     .from('meta_ads')
     .select('*')
@@ -71,6 +75,11 @@ export const fetchAds = async (filters?: {
 }
 
 export const getBrands = async () => {
+  if (!supabase) {
+    console.warn('Supabase client not initialized')
+    return []
+  }
+
   const { data, error } = await supabase
     .from('meta_ads')
     .select('brand')
@@ -86,6 +95,16 @@ export const getBrands = async () => {
 }
 
 export const getAdStats = async () => {
+  if (!supabase) {
+    console.warn('Supabase client not initialized')
+    return {
+      total: 0,
+      active: 0,
+      brands: 0,
+      mediaTypes: { video: 0, image: 0, carousel: 0 }
+    }
+  }
+
   const { data, error } = await supabase
     .from('meta_ads')
     .select('id, brand, is_active, media_type')
