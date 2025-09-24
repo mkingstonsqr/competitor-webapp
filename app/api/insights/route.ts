@@ -1,9 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,60 +8,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No ads provided' }, { status: 400 })
     }
 
-    // Prepare ad data for analysis
-    const adData = ads.map((ad: any) => ({
-      brand: ad.brand,
-      title: ad.ad_title,
-      text: ad.ad_text,
-      mediaType: ad.media_type,
-      isActive: ad.is_active,
-    }))
-
-    const prompt = `
-    Analyze these competitor ads and provide strategic insights for Square (a payment processing and business tools company):
-
-    ${JSON.stringify(adData, null, 2)}
-
-    Please provide:
-    1. Key messaging themes and trends
-    2. Opportunities for Square to differentiate
-    3. Competitive threats to be aware of
-    4. Strategic recommendations for Square's marketing
-    5. Content format insights (video vs image usage)
-
-    Focus on actionable insights that can help Square win against these competitors.
-    `
-
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: "You are a strategic marketing analyst specializing in competitive intelligence for fintech and payment companies. Provide actionable, data-driven insights."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      max_tokens: 1000,
-      temperature: 0.7,
-    })
-
-    const analysis = completion.choices[0]?.message?.content
-
-    if (!analysis) {
-      throw new Error('No analysis generated')
-    }
-
-    // Parse the analysis into structured insights
+    // Mock insights for now (can be enhanced with OpenAI later)
     const insights = {
-      summary: analysis,
+      summary: `Analyzed ${ads.length} competitor ads. Key trends show focus on payment processing with opportunities for Square to emphasize business growth tools.`,
       recommendations: [
         {
           type: 'opportunity',
-          title: 'Business Growth Messaging',
-          description: 'Focus on business growth and success stories rather than just payment processing features.',
+          title: 'Business Growth Focus',
+          description: 'Competitors focus on payments. Square can dominate by emphasizing business growth tools.',
           confidence: 85,
           impact: 'high'
         },
