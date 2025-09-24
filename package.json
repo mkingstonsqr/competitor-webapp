@@ -13,6 +13,7 @@
     "react": "^18",
     "react-dom": "^18",
     "@supabase/supabase-js": "^2.38.0",
+    "openai": "^4.20.0",
     "lucide-react": "^0.294.0",
     "framer-motion": "^10.16.0",
     "react-intersection-observer": "^9.5.0"
