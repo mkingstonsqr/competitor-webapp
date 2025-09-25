@@ -5,7 +5,6 @@ const nextConfig = {
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_OPENAI_API_KEY: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
   },
-  },
   images: {
     domains: ['images.unsplash.com', 'via.placeholder.com'],
     remotePatterns: [
