@@ -12,19 +12,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 // Types for our database
 export interface Ad {
   id: number
+export interface Ad {
+  id: number
   library_id: string
-  ad_library_url: string
-  primary_thumbnail: string
-  media_type: string
-  brand: string
-  ad_text: string
-  ad_title: string
-  is_active: boolean
-  scraped_at: string
-  imported_at: string
-  dataset_id: string
-  dataset_name: string
-}
 
 // Helper functions
 export const fetchAds = async (filters?: {

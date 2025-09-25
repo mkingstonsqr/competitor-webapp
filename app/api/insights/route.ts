@@ -10,11 +10,36 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || '',
 })
 
+
 export async function POST(request: NextRequest) {
   try {
     const { ads } = await request.json()
 
     if (!ads || ads.length === 0) {
+      return NextResponse.json({ error: 'No ads provided' }, { status: 400 })
+    }
+
+    // If no OpenAI API key is configured, return a placeholder response
+    if (!openai) {
+      const insights = {
+        summary: "AI insights are currently unavailable. Please configure your OpenAI API key to enable intelligent analysis of your competitor ads.",
+        recommendations: [
+          {
+            type: 'info',
+            title: 'Configuration Required',
+            description: 'Add your OpenAI API key to environment variables to enable AI-powered insights.',
+            confidence: 100,
+            impact: 'high'
+          },
+          {
+            type: 'data',
+            title: 'Dataset Overview',
+            description: `Currently analyzing ${ads.length} competitor ads from your database.`,
+            confidence: 100,
+            impact: 'medium'
+          }
+        ]
+      }
       return NextResponse.json({ error: 'No ads provided' }, { status: 400 })
     }
 
@@ -67,11 +92,11 @@ export async function POST(request: NextRequest) {
     `
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4",
       messages: [
-        { 
+        {
           role: "system",
-          content: "You are an expert digital marketing analyst. Analyze the provided Meta ads data and provide actionable insights about trends, strategies, and opportunities. Focus on practical recommendations."
+          content: "You are a strategic marketing analyst specializing in competitive intelligence for fintech and payment companies. Provide actionable, data-driven insights."
         },
         {
           role: "user",

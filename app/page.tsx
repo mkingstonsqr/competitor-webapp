@@ -1,8 +1,7 @@
 'use client'
-'use client'
+
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
-import { Search, Filter, TrendingUp, Eye, Calendar, DollarSign, Target, BarChart3, Download, Sparkles } from 'lucide-react'
+import { Search, Filter, TrendingUp, Zap, Globe, Target, BarChart3, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 import AdTile from './components/AdTile'
 import FilterPanel from './components/FilterPanel'
@@ -28,13 +27,13 @@ interface Ad {
 
 export default function Home() {
   const [ads, setAds] = useState<Ad[]>([])
-  const [filteredAds, setFilteredAds] = useState<MetaAd[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedPage, setSelectedPage] = useState<string>('all')
-  const [pages, setPages] = useState<string[]>([])
-  const [insights, setInsights] = useState<string>('')
-  const [isLoadingInsights, setIsLoadingInsights] = useState(false)
-
+  const [filteredAds, setFilteredAds] = useState<Ad[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedCountry, setSelectedCountry] = useState<string>('all')
+  const [selectedBrand, setSelectedBrand] = useState<string>('all')
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [selectedAds, setSelectedAds] = useState<Ad[]>([])
+  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     fetchAds()
@@ -79,13 +78,13 @@ export default function Home() {
     }
 
     if (searchTerm) {
-      return ads.filter(ad => 
-        ad.ad_creative_body?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        ad.page_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (ad.ad_snapshot_url && ad.ad_snapshot_url.toLowerCase().includes(searchTerm.toLowerCase()))
+      filtered = filtered.filter(ad =>
+        ad.ad_text?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ad.ad_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ad.brand?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
-    return ads
+
     setFilteredAds(filtered)
   }
 
@@ -121,10 +120,10 @@ export default function Home() {
             </h1>
             <p className="text-xl md:text-2xl text-gray-400 mb-8 max-w-3xl mx-auto">
               Discover what your competitors are doing, analyze their strategies, and find opportunities for Square to dominate the market.
-        </div>
+            </p>
+          </motion.div>
 
-        {/* AI Insights */}
-        {insights && process.env.NEXT_PUBLIC_OPENAI_API_KEY && (
+          {/* Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -160,13 +159,13 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="glass-effect rounded-2xl p-6 mb-6"
           >
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search ads by content, page name, or URL..."
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+              {/* Search */}
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search ads, brands, or content..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
@@ -177,13 +176,13 @@ export default function Home() {
               <select
                 value={selectedBrand}
                 onChange={(e) => setSelectedBrand(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Pages</option>
-              {pages.map(page => (
-                <option key={page} value={page}>{page}</option>
-              ))}
-            </select>
+                className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+              >
+                <option value="all">All Brands</option>
+                {uniqueBrands.map(brand => (
+                  <option key={brand} value={brand}>{brand}</option>
+                ))}
+              </select>
 
               {/* Filter Toggle */}
               <button
